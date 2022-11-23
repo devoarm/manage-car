@@ -20,14 +20,7 @@
 
         <!-- Divider -->
         <hr class="sidebar-divider my-0" />
-
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
-          <NuxtLink class="nav-link" to="/calendar">
-            <i class="fas fa-fw fa-calendar-alt"></i>
-            <span>ปฏิทินการจอง</span>
-          </NuxtLink>
-        </li>
+                
         <li class="nav-item active">
           <NuxtLink class="nav-link" to="/reserves/addReserve">
             <i class="fas fa-fw fa-solid fa-plus"></i>

@@ -23,4 +23,5 @@ app.use('/rank', require("./routes/rankRoutes"));
 app.use('/car', require("./routes/carRoutes"));
 app.use('/chauffeur', require("./routes/chauffeurRoutes"));
 app.use('/reserve', require("./routes/reserveRoutes"));
+app.use('/address', require("./routes/addressRoutes"));
 module.exports = app;

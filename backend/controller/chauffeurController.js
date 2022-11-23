@@ -59,7 +59,7 @@ const FindOneChauffeur = async (req, res) => {
   }
 };
 const UpdateChauffeurData = async (req, res) => {
-  const body = req.body
+  const body = req.body;
   try {
     let data = await db("chauffeur")
       .update({
@@ -68,6 +68,7 @@ const UpdateChauffeurData = async (req, res) => {
         chauffeur_phone: body.chauffeur_phone,
         agency_id: body.agency_id,
         rank_id: body.rank_id,
+        car_id: body.car_id,
       })
       .where({ chauffeur_id: req.body.chauffeur_id });
     return res.json({ status: 200, msg: "success", result: data });

@@ -156,6 +156,7 @@ export default {
     },
      async handleSubmit(e) {
       e.preventDefault()
+      this.form.car_color_badge = Math.floor(Math.random()*16777215).toString(16);
       const formData = new FormData();
       formData.append('image', this.form.car_image);
       formData.append('data', JSON.stringify(this.form));      

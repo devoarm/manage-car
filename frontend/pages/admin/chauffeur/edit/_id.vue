@@ -37,13 +37,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="exampleInputEmail1" class="text-dark">ชื่อ</label>
-                            <input v-model="form.chauffeur_fname" name="fname" type="text" class="form-control" placeholder="กรุณากรอก :" aria-label="Username" aria-describedby="basic-addon1"></input>
+                            <input v-model="form.chauffeur_fname" required="" oninput="setCustomValidity('')" oninvalid="this.setCustomValidity('กรุณากรอกชื่อ')" name="fname" type="text" class="form-control" placeholder="กรุณากรอก :" aria-label="Username" aria-describedby="basic-addon1"></input>
                         </div>                  
                     </div>       
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="exampleInputEmail1" class="text-dark">นามสกุล</label>
-                            <input v-model="form.chauffeur_lname" name="lname" type="text" class="form-control" placeholder="กรุณากรอก :" aria-label="Username" aria-describedby="basic-addon1"></input>
+                            <input v-model="form.chauffeur_lname" required="" oninput="setCustomValidity('')" oninvalid="this.setCustomValidity('กรุณากรอกนามสกุล')" name="lname" type="text" class="form-control" placeholder="กรุณากรอก :" aria-label="Username" aria-describedby="basic-addon1"></input>
                         </div>                  
                     </div>                      
                     <div class="col-md-6">
@@ -65,9 +65,17 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="exampleInputEmail1" class="text-dark">เบอร์ติดต่อ</label>
-                            <input v-model="form.chauffeur_phone" name="phone" type="text" class="form-control" placeholder="กรุณากรอก :" aria-label="Username" aria-describedby="basic-addon1"></input>
+                            <input v-model="form.chauffeur_phone" required="" oninput="setCustomValidity('')" oninvalid="this.setCustomValidity('กรุณากรอกเบอร์โทร')" name="phone" type="text" class="form-control" placeholder="กรุณากรอก :" aria-label="Username" aria-describedby="basic-addon1"></input>
                         </div>                  
-                    </div>       
+                    </div>    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1" class="text-dark">รถที่ดูแล</label>
+                            <select class="form-control" v-model="form.car_id">
+                                <option v-for="car in cars" :value="car.car_id">{{car.car_brand}} {{car.car_model}} {{car.car_license}}</option>
+                            </select>
+                        </div>
+                    </div>     
                 </div>
                 <hr></hr>
                 <div class="d-flex justify-content-center">
@@ -101,6 +109,7 @@
         this.fetchChauffeur()
         this.fetchRankOne()
         this.fetchAgencyOne()
+        this.fetchCars()
     },
     data() {
       return {    
@@ -108,6 +117,7 @@
         url:null,
         ranks:[],
         agencys:[],
+        cars:[],
         form: {              
           chauffeur_fname: '',
           chauffeur_lname: '',
@@ -115,6 +125,7 @@
           chauffeur_phone: '',
           agency_id: '1',
           rank_id: '1',
+          car_id:'1'
         },
       }
     },
@@ -133,6 +144,10 @@
     async fetchAgencyOne(){
       const ip = await this.$axios.get(`api/agency`)
       this.agencys = ip.data.result
+    },
+    async fetchCars(){
+      const ip = await this.$axios.get(`api/car`)
+      this.cars = ip.data.result
     },
     async fetchChauffeur() {
       const ip = await this.$axios.get(`api/chauffeur/${this.$route.params.id}`)

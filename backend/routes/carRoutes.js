@@ -18,6 +18,7 @@ const upload = multer({ storage });
 router.get("/", auth, carController.GetCar);
 router.get("/:id", auth, carController.FindOneCar);
 router.post("/", auth, upload.single("image"), carController.AddCar);
+router.post("/carNotIn", auth, carController.NotInCar);
 router.put("/data", carController.UpdateCarData);
 router.put("/image", auth, upload.single("image"), carController.UpdateCarImage);
 router.delete("/:id", auth, carController.DelCar);

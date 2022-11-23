@@ -6,6 +6,7 @@ const db = require("knex")({
     user: "root",
     password: "",
     database: "car",
+    timezone: "th",
   },
 });
 

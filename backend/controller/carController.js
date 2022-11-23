@@ -19,6 +19,7 @@ const AddCar = async (req, res) => {
         car_license: data.car_license,
         car_max_peple: data.car_max_peple,
         car_detail: data.car_detail,
+        car_color_badge: data.car_color_badge,
       });
       return res.json({
         status: 200,
@@ -67,7 +68,7 @@ const UpdateCarData = async (req, res) => {
   }
 };
 const UpdateCarImage = async (req, res) => {
-  let data = JSON.parse(req.body.data);  
+  let data = JSON.parse(req.body.data);
   let resultHandler = async function (err) {
     if (err) {
       return res.json({
@@ -87,7 +88,7 @@ const UpdateCarImage = async (req, res) => {
         return res.json({ status: 401, msg: error });
       }
     }
-  };  
+  };
   fs.unlink(`public/${data.car_image}`, resultHandler);
 };
 const DelCar = async (req, res) => {
@@ -99,6 +100,17 @@ const DelCar = async (req, res) => {
     return res.json({ status: 500, msg: error });
   }
 };
+const NotInCar = async (req, res) => {
+  console.log(req.body.car_ids);
+  try {
+    let data = await db("car")
+      .whereNotIn("car_id", req.body.car_ids)
+      .select("*");
+    return res.json({ status: 200, msg: "success", result: data });
+  } catch (error) {
+    return res.json({ status: 500, msg: error.message });
+  }
+};
 
 module.exports = {
   AddCar,
@@ -107,4 +119,5 @@ module.exports = {
   UpdateCarData,
   UpdateCarImage,
   DelCar,
+  NotInCar,
 };

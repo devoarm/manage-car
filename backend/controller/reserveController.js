@@ -6,9 +6,9 @@ const AddReserve = async (req, res) => {
   try {
     await db("reserve").insert({
       car_id: req.body.car_id,
-      chauffeur_id: req.body.chauffeur_id,
+      user_id: req.body.user_id,
       reserve_objective: req.body.reserve_objective,
-      reserve_full_address: req.body.reserve_full_address,
+      reserve_address_code_full: req.body.reserve_address_code_full,
       reserve_length: req.body.reserve_length,
       reserve_budget_type: req.body.reserve_budget_type,
       reserve_personnel_amount: req.body.reserve_personnel_amount,
@@ -36,7 +36,8 @@ const GetReserve = async (req, res) => {
         "c.chauffeur_lname",
         "car.car_brand",
         "car.car_model",
-        "car.car_license"
+        "car.car_license",
+        "car.car_color_badge"
       );
     return res.json({ status: 200, msg: "success", result: data });
   } catch (error) {

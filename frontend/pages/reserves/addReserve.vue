@@ -11,6 +11,18 @@
           <div class="card-body">
             <form @submit="handleSubmit">
               <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="exampleInputEmail1" class="text-dark">วันเวลาที่เดินทางไป</label>                    
+                    <date-picker v-model="form.reserve_start_date_time" @change="onDateChange" type="datetime"></date-picker>
+                  </div>                  
+                </div> 
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="exampleInputEmail1" class="text-dark">วันเวลาที่เดินทางกลับ</label>                    
+                    <date-picker v-model="form.reserve_end_date_time" @change="onDateChange" type="datetime"></date-picker>
+                  </div>                  
+                </div>       
                 <div class="col-md-12">
                   <div class="form-group">
                     <label for="exampleInputEmail1" class="text-dark">เลือกรถ</label>
@@ -25,18 +37,30 @@
                     <input v-model="form.reserve_objective" name="reserve_objective" type="text" class="form-control" placeholder="กรุณากรอก :"></input>
                   </div>                  
                 </div>                
-                <div class="col-md-6">
-                  <ThailandAutoComplete
-                    v-model="district"
-                    type="district"
-                    @select="select"
-                    label="ตำบล"
-                    color="#5DADE2"                    
-                    placeholder="ตำบล..."/>
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="exampleInputEmail1" class="text-dark">จังหวัด</label>
+                    <select class="form-control" @change="fetchAmpChange" v-model="form.chw">
+                      <option v-for="chw in chws" :value="chw.changwatcode">{{chw.changwatname}}</option>
+                    </select>
+                  </div>                                
                 </div>                  
-                <div class="col-md-6"><ThailandAutoComplete v-model="amphoe" type="amphoe" @select="select" color="#5DADE2" label="อำเภอ" placeholder="อำเภอ..."/></div>
-                <div class="col-md-6"><ThailandAutoComplete v-model="province" type="province" @select="select" label="จังหวัด" color="#5DADE2" placeholder="จังหวัด..."/></div>
-                <div class="col-md-6"><ThailandAutoComplete v-model="zipcode" type="zipcode" @select="select" label="รหัสไปรษณีย์" color="#5DADE2" placeholder="รหัสไปรษณีย์..."/>        </div>                                                                       
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="exampleInputEmail1" class="text-dark">อำเภอ</label>
+                    <select class="form-control" v-model="form.amp" @change="fetchTmbChange" :disabled="disAmp">
+                      <option v-for="amp in amps" :value="amp.ampurcodefull">{{amp.ampurname}}</option>
+                    </select>
+                  </div>                                
+                </div>                                                
+                <div class="col-md-12">
+                  <div class="form-group">
+                    <label for="exampleInputEmail1" class="text-dark">ตำบล</label>
+                    <select class="form-control" v-model="form.tmb" :disabled="disTmb">
+                      <option v-for="tmb in tmbs" :value="tmb.tamboncodefull">{{tmb.tambonname}}</option>
+                    </select>
+                  </div>                                
+                </div>                                                                                                              
                 <div class="col-md-6">
                   <div class="form-group">
                     <label for="exampleInputEmail1" class="text-dark">ระยะทาง</label>
@@ -78,27 +102,7 @@
                     <input type="text" class="form-control" v-model="form.reserve_student_amount" name="reserve_student_amount" placeholder="กรุณากรอก :" aria-label="Username" aria-describedby="basic-addon1"></input>
                   </div>                  
                 </div> 
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="exampleInputEmail1" class="text-dark">วันเวลาที่เดินทางไป</label>                    
-                    <date-picker v-model="form.reserve_start_date_time" type="datetime"></date-picker>
-
-                  </div>                  
-                </div> 
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="exampleInputEmail1" class="text-dark">วันเวลาที่เดินทางกลับ</label>                    
-                    <date-picker v-model="form.reserve_end_date_time" type="datetime"></date-picker>
-                  </div>                  
-                </div>               
-                <div class="col-md-6">
-                  <div class="form-group">
-                    <label for="exampleInputEmail1" class="text-dark">ผู้รับผิดชอบในการควบคุมการใช้รถยนต์</label>
-                    <select class="form-control" v-model="form.chauffeur_id">
-                      <option v-for="chauffeur in chauffeurs" :value="chauffeur.chauffeur_id">{{chauffeur.chauffeur_fname}} {{chauffeur.chauffeur_lname}}</option>
-                    </select>
-                  </div>
-                </div>
+                                        
               </div>       
               <div class="text-center" type="submit">
                 <button class="btn btn-primary">บันทึก</button>
@@ -118,7 +122,9 @@
 import ThailandAutoComplete from 'vue-thailand-address-autocomplete'
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
-
+import moment from 'moment';
+import { mapGetters } from 'vuex'
+import { on } from 'events';
 export default {
   name: "IndexPage",
   middleware: "auth",
@@ -127,20 +133,26 @@ export default {
     ThailandAutoComplete,
     DatePicker
   },  
+  computed: mapGetters({
+    currentUser: 'auth/currentUser',
+  }),
   data() {
     return {
       cars:[],
       chauffeurs:[],
       form:{},
-      district: '',
-      amphoe: '',
-      province: '',
-      zipcode: ''
+      reserves:[],
+      chws:[],
+      amps:[],
+      tmbs:[],
+      disAmp:true,
+      disTmb:true
     }
   },
-  mounted() {
-    this.fetchCar()
-    this.fetchChauffeur()
+  mounted() {    
+    this.fetchChauffeur()    
+    this.fetchReserve()
+    this.fetchChw()
   },
   methods: {
     select (address) {
@@ -148,19 +160,56 @@ export default {
       this.amphoe = address.amphoe
       this.province = address.province
       this.zipcode = address.zipcode
-    },
-    async fetchCar() {
-      const ip = await this.$axios.get("api/car")
-      this.cars = ip.data.result      
-    },
+    },    
     async fetchChauffeur(){
       const ip = await this.$axios.get("api/chauffeur")
       this.chauffeurs = ip.data.result
     },
+    async fetchReserve() {
+      const ip = await this.$axios.get("api/reserve")
+      this.reserves = ip.data.result
+    },
+    
+    async fetchChw(){
+      const ip = await this.$axios.get("api/address/chw")
+      this.chws = ip.data.result      
+    },
+    async fetchAmpChange(){
+      const ip = await this.$axios.get(`api/address/amp/${this.form.chw}`)
+      this.disAmp = false
+      this.disTmb = true      
+      this.form.tmb = ''
+      this.amps = ip.data.result            
+    },
+    async fetchTmbChange(){
+      const ip = await this.$axios.get(`api/address/tmb/${this.form.amp}`)
+      this.disAmp = false
+      this.disTmb = false      
+      this.tmbs = ip.data.result      
+    },
+    async onDateChange(){
+      if(this.form.reserve_start_date_time &&this.form.reserve_end_date_time){
+        this.cars = []
+        //หารถที่ว่าง
+        const carUsed = this.reserves.filter((item)=>{          
+          return (moment(this.form.reserve_start_date_time).format('YYYY MM DD, h:mm:ss a') <= moment(item.reserve_start_date_time ).format('YYYY MM DD, h:mm:ss a')  &&
+            moment(this.form.reserve_end_date_time).format('YYYY MM DD, h:mm:ss a') >= moment(item.reserve_end_date_time ).format('YYYY MM DD, h:mm:ss a'))                         
+        })        
+        const carIds = carUsed.map(item=>{
+          return item.car_id
+        })
+        console.log(carIds)
+        const ip = await this.$axios.post(`api/car/carNotIn`,{car_ids:carIds})        
+        this.cars = ip.data.result
+        // this.form.car_id = this.cars[0].car_id
+        // this.fetchCar(carUsed)        
+      }
+    },
     async handleSubmit(e){
       e.preventDefault()
       try {
-        this.form.reserve_full_address = `ต.${this.district} อ.${this.amphoe} จ.${this.province} รหัสไปรษณีย์ ${this.zipcode}`
+        this.form.user_id = this.currentUser.user_id
+        this.form.reserve_address_code_full = this.form.tmb        
         const ip = await this.$axios.$post('api/reserve', this.form)
         if (ip.status === 200) {
           await this.$swal({
